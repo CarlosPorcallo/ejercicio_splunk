@@ -1,0 +1,33 @@
+-- Conteo de mensajes por Entity
+source="sample.csv" host="1c07d9df4062" index="dummy_app_logs" sourcetype="csv"
+| chart count by entity, type
+
+-- Conteo de mensajes por Entity y cadena de texto específica
+source="sample.csv" host="1c07d9df4062" index="dummy_app_logs" sourcetype="csv"
+| search "MockLogger.java"
+| chart count by entity
+
+source="sample.csv" host="1c07d9df4062" index="dummy_app_logs" sourcetype="csv"
+| search "MockLogger.java"
+| chart count by entity
+| sort - count
+
+-- Conteo de mensajes por Entity, tipo y cadena de texto específica
+source="sample.csv" host="1c07d9df4062" index="dummy_app_logs" sourcetype="csv"
+| search "MockLogger.java"
+| chart count by entity, type
+| sort - count
+
+-- Conteo de mensajes por Entity, tipo y cadena de texto específica (Con Totales)
+source="sample.csv" host="1c07d9df4062" index="dummy_app_logs" sourcetype="csv"
+| search "MockLogger.java"
+| chart count by entity, type
+| addtotals row=true labelfield=entity fieldname="Conteo por Entity" col=true label="Conteo por Tipo de Mensaje"
+
+-- Tabla personalizada con nuevos campos
+index="checkout_index"
+| search (type="DEBUG" OR type="ERROR")
+| rex field=message "id (?<id>[^\"]+)"
+| eval tipo_mensaje=type
+| search id="19*"
+| table _time, id, message, tipo_mensaje
